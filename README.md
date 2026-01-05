@@ -121,7 +121,3 @@ expense-tracker/
 **Data file issues:** Check `data/` folder exists and has write permissions
 
 **Electron not starting:** Ensure all dependencies installed with `npm install`
-
-## License
-
-MIT
