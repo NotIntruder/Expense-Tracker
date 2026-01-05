@@ -114,14 +114,6 @@ expense-tracker/
 - Node.js 14 or higher
 - npm 6 or higher
 
-## Testing
-
-Run automated tests:
-
-```bash
-npm test
-```
-
 ## Troubleshooting
 
 **"Module not found" errors:** Run `npm install` again
