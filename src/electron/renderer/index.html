@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="app-title">💰 Expense Tracker</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="dashboard">
+                    📊 Dashboard
+                </button>
+                <button class="nav-item" data-view="transactions">
+                    📋 Transactions
+                </button>
+                <button class="nav-item" data-view="add">
+                    ➕ Add New
+                </button>
+                <button class="nav-item" data-view="settings">
+                    ⚙️ Settings
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboard-view" class="view active">
+                <div class="page-header">
+                    <h2>Dashboard Overview</h2>
+                    <span class="current-currency" id="header-currency">₹</span>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card card-income">
+                        <div class="card-icon">📈</div>
+                        <div class="card-content">
+                            <p class="card-label">Total Income</p>
+                            <p class="card-value" id="total-income">₹0.00</p>
+                        </div>
+                    </div>
+                    <div class="card card-expense">
+                        <div class="card-icon">📉</div>
+                        <div class="card-content">
+                            <p class="card-label">Total Expenses</p>
+                            <p class="card-value" id="total-expenses">₹0.00</p>
+                        </div>
+                    </div>
+                    <div class="card card-balance">
+                        <div class="card-icon">💰</div>
+                        <div class="card-content">
+                            <p class="card-label">Current Balance</p>
+                            <p class="card-value" id="current-balance">₹0.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Expenses by Category</h3>
+                        <canvas id="expense-pie-chart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Income vs Expenses</h3>
+                        <canvas id="income-expense-bar-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions View -->
+            <section id="transactions-view" class="view">
+                <div class="page-header">
+                    <h2>All Transactions</h2>
+                </div>
+
+                <div class="filters">
+                    <select id="filter-type" class="filter-select">
+                        <option value="all">All Types</option>
+                        <option value="expense">Expenses Only</option>
+                        <option value="income">Income Only</option>
+                    </select>
+                    <input type="date" id="filter-start-date" class="filter-input" title="Start Date">
+                    <input type="date" id="filter-end-date" class="filter-input" title="End Date">
+                    <select id="filter-category" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Education">Education</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="filter-source" class="filter-select hidden">
+                        <option value="">All Sources</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Gift">Gift</option>
+                        <option value="Business">Business</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="text" id="search-description" class="filter-input" placeholder="Search...">
+                    <button type="button" id="clear-filters-btn" class="btn btn-secondary">Clear</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Category/Source</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Add New View -->
+            <section id="add-view" class="view">
+                <div class="page-header">
+                    <h2>Add New Transaction</h2>
+                </div>
+
+                <div class="form-container">
+                    <div class="type-selector">
+                        <button class="type-btn active" data-type="expense">📉 Expense</button>
+                        <button class="type-btn" data-type="income">📈 Income</button>
+                    </div>
+
+                    <form id="add-transaction-form">
+                        <div class="form-group">
+                            <label for="amount">Amount *</label>
+                            <input type="number" id="amount" step="0.01" min="0" required>
+                            <small class="error-message" id="amount-error"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Date *</label>
+                            <input type="date" id="date" required>
+                            <small class="error-message" id="date-error"></small>
+                        </div>
+
+                        <div class="form-group" id="category-group">
+                            <label for="category">Category *</label>
+                            <select id="category" required>
+                                <option value="">Select category...</option>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Education">Education</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <small class="error-message" id="category-error"></small>
+                        </div>
+
+                        <div class="form-group hidden" id="source-group">
+                            <label for="source">Source *</label>
+                            <select id="source">
+                                <option value="">Select source...</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Freelance">Freelance</option>
+                                <option value="Investment">Investment</option>
+                                <option value="Gift">Gift</option>
+                                <option value="Business">Business</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <small class="error-message" id="source-error"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description (Optional)</label>
+                            <textarea id="description" rows="3" maxlength="500"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Transaction</button>
+                            <button type="reset" class="btn btn-secondary">Clear Form</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settings-view" class="view">
+                <div class="page-header">
+                    <h2>Settings</h2>
+                </div>
+
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="currency-select">Preferred Currency</label>
+                        <select id="currency-select" class="setting-select">
+                            <option value="$">$ - US Dollar (USD)</option>
+                            <option value="€">€ - Euro (EUR)</option>
+                            <option value="£">£ - British Pound (GBP)</option>
+                            <option value="₹" selected>₹ - Indian Rupee (INR)</option>
+                            <option value="¥">¥ - Japanese Yen (JPY)</option>
+                            <option value="C$">C$ - Canadian Dollar (CAD)</option>
+                            <option value="A$">A$ - Australian Dollar (AUD)</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Loading -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Edit Transaction</h3>
+                <button type="button" class="modal-close" id="edit-modal-close-x">&times;</button>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <input type="hidden" id="edit-type">
+
+                <div class="form-group">
+                    <label for="edit-amount">Amount *</label>
+                    <div class="amount-input-group">
+                        <input type="number" id="edit-amount" step="0.01" min="0" required style="flex: 1;">
+                        <select id="edit-currency" class="currency-select-compact" required>
+                            <option value="$">USD</option>
+                            <option value="€">EUR</option>
+                            <option value="£">GBP</option>
+                            <option value="₹">INR</option>
+                            <option value="¥">JPY</option>
+                            <option value="C$">CAD</option>
+                            <option value="A$">AUD</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-date">Date *</label>
+                    <input type="date" id="edit-date" required>
+                </div>
+
+                <div class="form-group" id="edit-category-group">
+                    <label for="edit-category">Category *</label>
+                    <select id="edit-category">
+                        <option value="">Select category...</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Education">Education</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="edit-source-group">
+                    <label for="edit-source">Source *</label>
+                    <select id="edit-source">
+                        <option value="">Select source...</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Gift">Gift</option>
+                        <option value="Business">Business</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-description">Description (Optional)</label>
+                    <textarea id="edit-description" rows="3" maxlength="500"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" id="edit-modal-cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

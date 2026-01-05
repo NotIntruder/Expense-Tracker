@@ -1,0 +1,53 @@
+{
+  "name": "expense-tracker",
+  "version": "1.0.0",
+  "description": "A comprehensive Node.js console application for tracking personal expenses and income with advanced filtering, summaries, and professional UX",
+  "main": "src/electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "test": "node test.js",
+    "electron:dev": "electron .",
+    "electron:build": "electron-builder"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/expense-tracker"
+  },
+  "keywords": [
+    "expense",
+    "tracker",
+    "income",
+    "finance",
+    "budget",
+    "console",
+    "electron",
+    "desktop",
+    "gui"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.3",
+    "readline-sync": "^1.4.10",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.expense-tracker.app",
+    "productName": "Expense Tracker",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "data/**/*",
+      "package.json"
+    ]
+  }
+}
